@@ -17,15 +17,7 @@ public class Kalah {
         System.out.println("Ez algo ez lyfe");
 
         while (game){
-        	for (int x=13;x>6;x--){
-            	System.out.print(board[x]);	
-        	}
-        	System.out.println(" ");
-        	System.out.print(" ");
-        	for (int x=0;x<7;x++){
-        		System.out.print(board[x]);
-        	}
-        	System.out.println("");
+        	Printboard();
         	if (player) System.out.println("Player L's Move");
         	else System.out.println("Player R's Move");
         	move = reader.next();
@@ -36,7 +28,7 @@ public class Kalah {
         			ind = Integer.parseInt(move.substring(1))-1;
         			if (board[ind]>0){
         				moves[turn] = Move(ind,move);
-        				game = Gamegoing(board);
+        				game = Gamegoing();
         			}
         			else System.out.println("Move invalid.");
 
@@ -45,7 +37,7 @@ public class Kalah {
         			ind = Integer.parseInt(move.substring(1))+6;
         			if (board[ind]>0){
         				moves[turn] = Move(ind,move);
-        				game = Gamegoing(board);
+        				game = Gamegoing();
         			}
         			else System.out.println("Move invalid.");
         		}
@@ -53,6 +45,16 @@ public class Kalah {
         	else System.out.println("Move invalid.");
         	
         
+    }
+    Printboard();
+    if (board[6]>board[13]){
+    	System.out.println("Player L wins");
+    }
+    else if (board[6]<board[13]){
+    	System.out.println("Player R wins");
+    }
+    else{
+    	System.out.println("Tie game");
     }
 	}
 	static String Move (int arnum,String mov){
@@ -94,16 +96,41 @@ public class Kalah {
 		player = !player;
 		turn++;
 		return mov+", "+boardstring;}
-	static boolean Gamegoing(int[] gameboard){
+	static boolean Gamegoing(){
 		boolean end=true;
 		for (int x=0;x<6;x++){
-			if (gameboard[x]>0) end=false;
+			if (board[x]>0){ end=false;
 		}
-		if (end=true) return false;
+		}
+		if (end=true) {
+			for (int x=12;x>6;x--){
+				board[6]+=board[x];
+				board[x]=0;
+			}
+		
+			return false;
+	}
 		for (int x=12;x>6;x--){
-			if (gameboard[x]>0) end=false;
+			if (board[x]>0) end=false;
 		}
-		if (end=true) return false;
+		if (end=true) {
+			for (int x=0;x<6;x++){
+				board[13]+=board[x];
+				board[x]=0;
+			}
+			return false;
+		}
 		return true;
 	}
+	static void Printboard(){
+		for (int x=13;x>6;x--){
+        	System.out.print(board[x]);	
+    	}
+    	System.out.println(" ");
+    	System.out.print(" ");
+    	for (int x=0;x<7;x++){
+    		System.out.print(board[x]);
+    	}
+    	System.out.println("");
+}
 }
