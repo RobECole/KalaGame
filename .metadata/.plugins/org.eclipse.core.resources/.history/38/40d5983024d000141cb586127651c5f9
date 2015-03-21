@@ -8,11 +8,8 @@ public class Kalah {
 	public static boolean player = true;
 	public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
 	public static int turn = 0;
-	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
-	//Kevin's - increment move counter when a move is made to add more moves
 	public static int moveCount = 0;
-	//Raab's - no idea LOL
 	public static String move;
 	public static void main(String[] args){
 		boolean game=true;
@@ -23,13 +20,11 @@ public class Kalah {
 		String move;
 		int ind = 0;
         System.out.println("Ez algo ez lyfe");
-        //Kevin's - temporary initialize move array for the each game
+        //initialize move array for the each game
         for(int i = 0; i<40; i++){
         	moves[i] = null;
         }
         moveCount = 0;
-        
-        
         while (game){
         	Printboard();
         	if (player) System.out.println("Player L's Move");

@@ -1,19 +1,11 @@
 import java.util.Scanner;
 
 import com.source.TwitterMessenger;
-import java.io.*;
-import java.util.regex.*;
 
 public class Kalah {
 	public static boolean player = true;
 	public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
 	public static int turn = 0;
-	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
-	public static String[] moves = new String[40]; 
-	//Kevin's - increment move counter when a move is made to add more moves
-	public static int moveCount = 0;
-	//Raab's - no idea LOL
-	public static String move;
 	public static void main(String[] args){
 		boolean game=true;
 
@@ -23,13 +15,7 @@ public class Kalah {
 		String move;
 		int ind = 0;
         System.out.println("Ez algo ez lyfe");
-        //Kevin's - temporary initialize move array for the each game
-        for(int i = 0; i<40; i++){
-        	moves[i] = null;
-        }
-        moveCount = 0;
-        
-        
+
         while (game){
         	Printboard();
         	if (player) System.out.println("Player L's Move");
@@ -147,67 +133,4 @@ public class Kalah {
     	}
     	System.out.println("");
 }
-	//Appends any moves not already in the file into the files
-		public void learn() throws IOException{		
-			String everything = "";
-		    String state = "";
-		    Pattern patternLog = null;
-		    Matcher matcherLog = null;
-			//read log file
-			BufferedReader br = new BufferedReader(new FileReader("log.txt"));
-		    try {
-		        StringBuilder sb = new StringBuilder();
-		        String line = br.readLine();
-
-		        while (line != null) {
-		            sb.append(line);
-		            sb.append(System.lineSeparator());
-		            line = br.readLine();
-		        }
-		        everything = sb.toString();
-		    } finally {
-		        br.close();
-		        System.out.println("found!");
-		    }
-		    for(int i = 0; i < 40 ; i++){
-		    	//go through all moves made
-		    	state = moves[i];
-		    	if(state == null){
-		    		break;
-		    	}
-		    	patternLog = Pattern.compile("\\w*\\s" + state);
-			    matcherLog = patternLog.matcher(everything);
-		    	if(matcherLog.matches() == false){
-			    	//append to file
-		    		System.out.println("Appending!");
-			    }
-		    }
-		}
-		public boolean MemoryRecal(String find) {
-			try {
-				File file = new File("log.txt");
-				FileReader fileReader = new FileReader(file);
-				BufferedReader bufferedReader = new BufferedReader(fileReader);
-				String line;
-				while ((line = bufferedReader.readLine()) != null) {
-
-					String[] parts = line.split("-");
-					String board = parts[1];
-					String prevMove = parts[0];
-
-					if (board == find) {
-						move = 	prevMove;
-						fileReader.close();
-						bufferedReader.close();
-						return true;
-					}
-				}
-				fileReader.close();
-				bufferedReader.close();
-				return false;
-			}catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
 }
