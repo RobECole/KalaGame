@@ -6,7 +6,8 @@ import java.util.regex.*;
 
 public class Kalah {
 	public static boolean player = true;
-	public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
+	//public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
+	public static int[] board = new int[] {0,3,0,0,0,1,0,0,0,0,0,0,1,0};
 	public static int turn = 0;
 	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
@@ -40,8 +41,9 @@ public class Kalah {
         	if ((move.substring(0,1).equals("L")||move.substring(0,1).equals("R"))&&((Integer.parseInt(move.substring(1,2))>0)&&(Integer.parseInt(move.substring(1,2))<7))){
         		if (move.substring(0,1).equals("L")){
         			ind = Integer.parseInt(move.substring(1))-1;
-        			if (board[ind]>0){
+        			if (board[ind]>0 && player){
         				moves[turn] = Move(ind,move);
+        				System.out.println("TURN:"+moves[turn]);
         				game = Gamegoing();
         			}
         			else System.out.println("Move invalid.");
@@ -49,8 +51,9 @@ public class Kalah {
         		}
         		else if (move.substring(0,1).equals("R")){      		
         			ind = Integer.parseInt(move.substring(1))+6;
-        			if (board[ind]>0){
+        			if (board[ind]>0 && !player){
         				moves[turn] = Move(ind,move);
+        				System.out.println("TURN:"+moves[turn]);
         				game = Gamegoing();
         			}
         			else System.out.println("Move invalid.");
@@ -58,7 +61,7 @@ public class Kalah {
         	}
         	else System.out.println("Move invalid.");
         	
-        
+    		turn++;    
     }
     Printboard();
     if (board[6]>board[13]){
@@ -89,7 +92,7 @@ public class Kalah {
 			for (int x=0;x<14;x++){
 				boardstring=boardstring+board[x];
 			}
-			return (mov+", "+boardstring);
+			return (mov+" "+boardstring);
 		}
 		else if (board[pointer]==1){
 			if (pointer>6 && !player && board[pointer-((pointer-6)*2)]>0){
@@ -108,28 +111,29 @@ public class Kalah {
 			boardstring=boardstring+board[x];
 		}
 		player = !player;
-		turn++;
-		return mov+", "+boardstring;}
+
+		return mov+" "+boardstring;}
 	static boolean Gamegoing(){
 		boolean end=true;
 		for (int x=0;x<6;x++){
 			if (board[x]>0){ end=false;
 		}
 		}
-		if (end=true) {
+		if (end==true) {
 			for (int x=12;x>6;x--){
-				board[6]+=board[x];
+				board[13]+=board[x];
 				board[x]=0;
 			}
 		
 			return false;
 	}
+		end = true;
 		for (int x=12;x>6;x--){
 			if (board[x]>0) end=false;
 		}
-		if (end=true) {
+		if (end==true) {
 			for (int x=0;x<6;x++){
-				board[13]+=board[x];
+				board[6]+=board[x];
 				board[x]=0;
 			}
 			return false;
@@ -210,4 +214,23 @@ public class Kalah {
 			}
 			return false;
 		}
+		/*public String HeuristicMove(){
+			if (player){
+				for (int x=0;x<6;x++){
+					//check if the move will give a free turn
+					if (x+board[x]==6){
+						if ((x+board[x]<6) && (board[x+board[x]]==0) && (board[x+((6-x)*2)]>0)){
+							return "L"+x;
+						}
+						else if (x+board[x])
+						//check if the free move will be advantegeous
+					}
+				}
+				//check for move that will steal points
+				//checks for simple free turn
+				//check for defensive move
+			}
+			return fmove;
+		}
+		*/
 }
