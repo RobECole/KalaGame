@@ -6,8 +6,8 @@ import java.util.regex.*;
 
 public class Kalah {
 	public static boolean player = true;
-	public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
-	//public static int[] board = new int[] {0,3,0,0,0,1,0,0,0,0,0,0,1,0};
+	//public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
+	public static int[] board = new int[] {0,4,0,0,4,4,5,0,4,1,0,4,4,6};
 	public static int turn = 0;
 	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
@@ -231,7 +231,7 @@ public class Kalah {
 		return false;
 	}
 	static public String HeuristicMove(){
-		String futurboard; 
+		String fboard; 
 		int[] copyboard = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		int[] futureboard = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		int moveprio = 6;
@@ -242,21 +242,21 @@ public class Kalah {
 				if (board[x]!=0){
 					if (x+board[x]==6){
 						copyboard = boardreplace(board);
-						futurboard = Move(x,"L"+(x+1));
+						fboard = Move(x,"L"+(x+1));
 						board = boardreplace(copyboard);
 						for (int z=0;z<futureboard.length;z++){
-							futureboard[z] = Integer.parseInt(futurboard.substring(x,x+1));
+							futureboard[z] = Integer.parseInt(fboard.substring(z,z+1));
 						}
 						for (int y=0;y<6;y++){                                                       
-							if ((y+futureboard[y]<6) && (futureboard[y+futureboard[y]]==0) && (futureboard[(y+futureboard[y])+((6-(y+futureboard[y]))*2)]>0)) return "L"+x;
+							if ((y+futureboard[y]<6) && (futureboard[y+futureboard[y]]==0) && (futureboard[(y+futureboard[y])+((6-(y+futureboard[y]))*2)]>0)) return "L"+(x+1);
 							//check if the free move will be advantegeous
 							else if (y+futureboard[y]==0 && moveprio > 1) {
 								moveoption= "L"+(x+1);
 								moveprio=1;
 							}
-							else if (futureboard[y]==0){
-								for (int z=0;z<y;z++){
-									if (z + futureboard[z]==y && moveprio > 4){
+							else if (futureboard[y+7]==0){
+								for (int z=y+7;z>6;z--){
+									if (z + futureboard[z]==y+7 && moveprio > 4){
 										moveoption = "L"+(x+1);
 										moveprio=5;
 									}
@@ -268,23 +268,35 @@ public class Kalah {
 							}
 						}
 					}
+					copyboard = boardreplace(board);
+					fboard = Move(x,"L"+(x+1));
+					board = boardreplace(copyboard);
+					
 					else if ((x+board[x]<6) && (board[x+board[x]]==0) && (board[(x+board[x])+((6-(x+board[x]))*2)]>0)&&(moveprio > 2)){
 						moveoption = "L"+(x+1);
 						moveprio=2;
 					}
-
-
+					else{
+							if (futureboard[x+7]==0){
+								for (int z=x+7;z>6;z--){
+									if (z + futureboard[z]==x+7 && moveprio > 4){
+										moveoption = "L"+(x+1);
+										moveprio=5;
+									}
+								}
+							}
+					}
 
 					//check for move that will steal points
 					//checks for simple free turn
 					//check for defensive move
 				}
 			}
-		}
+		
 		if (!player){
 			for (int x=12;x>6;x--){
 				copyboard = boardreplace(board);
-				futurboard = Move(x,"R"+(x+1));
+				fboard = Move(x,"R"+(x+1));
 				board = boardreplace(copyboard);
 				//check if the move will give a free turn
 				if (board[x]!=0){
@@ -292,7 +304,7 @@ public class Kalah {
 						if (x+board[x]==13){
 
 							for (int z=0;z<futureboard.length;z++){
-								futureboard[z] = Integer.parseInt(futurboard.substring(x,x+1));
+								futureboard[z] = Integer.parseInt(fboard.substring(z,z+1));
 							}
 							for (int y=12;y>6;y--){
 								if(futureboard[y]+y<13){                                                
@@ -314,9 +326,9 @@ public class Kalah {
 								else if (moveprio > 3){
 										moveoption = "R"+(x-6);
 										moveprio = 3;
-									}
 								}
 							}
+							
 						}
 						else if (((x+board[x]>6) && (board[x+board[x]]==0) && (board[(x+board[x])-(((x+board[x])-6)*2)]>0)) && (moveprio>2)){
 							moveoption = "R"+(x-6);
@@ -328,7 +340,7 @@ public class Kalah {
 						//check for move that will steal points
 						//checks for simple free turn
 						//check for defensive move
-					}
+				}
 				}
 			}
 		}
