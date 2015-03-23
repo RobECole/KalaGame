@@ -6,15 +6,16 @@ import java.util.regex.*;
 
 public class Kalah {
 	public static boolean player = true;
-	//public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
-	public static int[] board = new int[] {0,4,0,0,4,4,5,0,4,1,0,4,4,6};
+	public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
+	//public static int[] board = new int[] {0,4,0,0,4,4,5,0,4,1,0,4,4,6};
+	public static String boardasstring="";
 	public static int turn = 0;
 	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
 	public static String move;
 	public static void main(String[] args){
 		boolean game=true;
-
+		boolean playerplz;
 		Scanner reader = new Scanner(System.in);
 
 		String move;
@@ -31,7 +32,9 @@ public class Kalah {
 
 			if (player) System.out.println("Player L's Move");
 			else System.out.println("Player R's Move");
+			playerplz=player;
 			System.out.println("PREDICTION: "+HeuristicMove());
+			player=playerplz;
 			move = reader.next();
 			System.out.println(move.substring(0,1));
 			System.out.println(Integer.parseInt(move.substring(1,2)));
@@ -40,6 +43,7 @@ public class Kalah {
 					ind = Integer.parseInt(move.substring(1))-1;
 					if (board[ind]>0 && player){
 						moves[turn] = move + " "+ Move(ind,move);
+						moves[turn] = boardasstring;
 						System.out.println("TURN:"+moves[turn]);
 
 						game = Gamegoing();
@@ -51,6 +55,7 @@ public class Kalah {
 					ind = Integer.parseInt(move.substring(1))+6;
 					if (board[ind]>0 && !player){
 						moves[turn] = move + " "+ Move(ind,move);
+						moves[turn] = boardasstring;
 						System.out.println("TURN:"+moves[turn]);
 						game = Gamegoing();
 					}
@@ -75,6 +80,7 @@ public class Kalah {
 	}
 	static String Move (int arnum,String mov){
 		int pointer = arnum;
+		boardasstring = "";
 		while (board[arnum]>0){
 			pointer++;
 			if (player == true && pointer == 13) pointer++;
@@ -90,6 +96,7 @@ public class Kalah {
 		if (pointer == 6 || pointer == 13){	
 			for (int x=0;x<14;x++){
 				boardstring=boardstring+board[x];
+				boardasstring = boardasstring+board[x]+" ";
 			}
 			return (boardstring);
 		}
@@ -108,6 +115,7 @@ public class Kalah {
 		}
 		for (int x=0;x<14;x++){
 			boardstring=boardstring+board[x];
+			boardasstring = boardasstring+board[x]+" ";
 		}
 		player = !player;
 
@@ -243,6 +251,7 @@ public class Kalah {
 					if (x+board[x]==6){
 						copyboard = boardreplace(board);
 						fboard = Move(x,"L"+(x+1));
+						if (!player) player=!player;
 						board = boardreplace(copyboard);
 						for (int z=0;z<futureboard.length;z++){
 							futureboard[z] = Integer.parseInt(fboard.substring(z,z+1));
@@ -256,9 +265,9 @@ public class Kalah {
 							}
 							else if (futureboard[y+7]==0){
 								for (int z=y+7;z>6;z--){
-									if (z + futureboard[z]==y+7 && moveprio > 4){
+									if (z + futureboard[z]!=y+7 && moveprio > 4){
 										moveoption = "L"+(x+1);
-										moveprio=5;
+										moveprio=4;
 									}
 								}
 							}
@@ -268,23 +277,30 @@ public class Kalah {
 							}
 						}
 					}
-					copyboard = boardreplace(board);
-					fboard = Move(x,"L"+(x+1));
-					board = boardreplace(copyboard);
-					
+
+
 					else if ((x+board[x]<6) && (board[x+board[x]]==0) && (board[(x+board[x])+((6-(x+board[x]))*2)]>0)&&(moveprio > 2)){
 						moveoption = "L"+(x+1);
 						moveprio=2;
 					}
 					else{
-							if (futureboard[x+7]==0){
-								for (int z=x+7;z>6;z--){
-									if (z + futureboard[z]==x+7 && moveprio > 4){
+						copyboard = boardreplace(board);
+						fboard = Move(x,"L"+(x+1));
+						if (!player) player=!player;
+						board = boardreplace(copyboard);
+						for (int z=0;z<futureboard.length;z++){
+							futureboard[z] = Integer.parseInt(fboard.substring(z,z+1));
+						}
+						for (int w=7;w<13;w++){
+							if (futureboard[w]==0){
+								for (int z=w;z>6;z--){
+									if (z + futureboard[z]!=w && moveprio > 4){
 										moveoption = "L"+(x+1);
-										moveprio=5;
+										moveprio=4;
 									}
 								}
 							}
+						}
 					}
 
 					//check for move that will steal points
@@ -292,11 +308,17 @@ public class Kalah {
 					//check for defensive move
 				}
 			}
-		
+			if (moveoption == ""){
+				for (int x=5;x>=0;x--){
+					if (board[x]!=0) moveoption = "L"+(x+1);
+				}
+			}
+		}
 		if (!player){
 			for (int x=12;x>6;x--){
 				copyboard = boardreplace(board);
 				fboard = Move(x,"R"+(x+1));
+				if (player) player=!player;
 				board = boardreplace(copyboard);
 				//check if the move will give a free turn
 				if (board[x]!=0){
@@ -315,24 +337,43 @@ public class Kalah {
 										moveprio=1;
 									}
 								}
-								else if (futureboard[y]==0){
-									for (int z=7;z<y;z++){
-										if (z + futureboard[z]==y && moveprio > 4){
+								else if (futureboard[y-7]==0){
+									for (int z=0;z<6;z++){
+										if (z + futureboard[z]!=y-7 && moveprio > 4){
 											moveoption = "R"+(x-6);
 											moveprio=5;
 										}
 									}
 								}
 								else if (moveprio > 3){
-										moveoption = "R"+(x-6);
-										moveprio = 3;
+									moveoption = "R"+(x-6);
+									moveprio = 3;
 								}
 							}
-							
+
 						}
 						else if (((x+board[x]>6) && (board[x+board[x]]==0) && (board[(x+board[x])-(((x+board[x])-6)*2)]>0)) && (moveprio>2)){
 							moveoption = "R"+(x-6);
 							moveprio=2;
+						}
+						else{
+							copyboard = boardreplace(board);
+							fboard = Move(x,"L"+(x+1));
+							if (!player) player=!player;
+							board = boardreplace(copyboard);
+							for (int z=0;z<futureboard.length;z++){
+								futureboard[z] = Integer.parseInt(fboard.substring(z,z+1));
+							}
+							for (int w=0;w<6;w++){
+								if (futureboard[w]==0){
+									for (int z=w;z<6;z++){
+										if (z + futureboard[z]!=w && moveprio > 4){
+											moveoption = "R"+(x-6);
+											moveprio=4;
+										}
+									}
+								}
+							}
 						}
 
 
@@ -340,7 +381,12 @@ public class Kalah {
 						//check for move that will steal points
 						//checks for simple free turn
 						//check for defensive move
+					}
 				}
+			}
+			if (moveoption == ""){
+				for (int x=12;x>6;x--){
+					if (board[x]!=0) moveoption = "R"+(x-6);
 				}
 			}
 		}
