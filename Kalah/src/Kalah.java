@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 import com.source.TwitterMessenger;
+
 import java.io.*;
 import java.util.regex.*;
 
@@ -13,7 +14,7 @@ public class Kalah {
 	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
 	public static String move;
-	public static void main(String[] args){
+	public static void main(String[] args) throws IOException{
 		boolean game=true;
 		boolean playerplz;
 		Scanner reader = new Scanner(System.in);
@@ -42,8 +43,8 @@ public class Kalah {
 				if (move.substring(0,1).equals("L")){
 					ind = Integer.parseInt(move.substring(1))-1;
 					if (board[ind]>0 && player){
-						moves[turn] = move + " "+ Move(ind,move);
-						moves[turn] = boardasstring;
+						moves[turn] = move + " " + Move(ind,move);
+						moves[turn] = move + " " + boardasstring;
 						System.out.println("TURN:"+moves[turn]);
 
 						game = Gamegoing();
@@ -55,7 +56,7 @@ public class Kalah {
 					ind = Integer.parseInt(move.substring(1))+6;
 					if (board[ind]>0 && !player){
 						moves[turn] = move + " "+ Move(ind,move);
-						moves[turn] = boardasstring;
+						moves[turn] = move + " "+ boardasstring;
 						System.out.println("TURN:"+moves[turn]);
 						game = Gamegoing();
 					}
@@ -69,12 +70,15 @@ public class Kalah {
 		Printboard();
 		if (board[6]>board[13]){
 			System.out.println("Player L wins");
+			learn("L");
 		}
 		else if (board[6]<board[13]){
 			System.out.println("Player R wins");
+			learn("R");
 		}
 		else{
 			System.out.println("Tie game");
+			learn("T");
 		}
 		reader.close();
 	}
@@ -159,48 +163,65 @@ public class Kalah {
 		System.out.println("");
 	}
 	//Appends any moves not already in the file into the files
-	public static void learn() throws IOException{		
-		String everything = "";
-		String state = "";
-		Pattern patternLog = null;
-		Matcher matcherLog = null;
-		//read log file
-		File file = new File("log.txt");
-		try {
-			FileReader fileReader = new FileReader(file);
-			BufferedReader br = new BufferedReader(fileReader);
-			StringBuilder sb = new StringBuilder();
-			String line = br.readLine();
-			while (line != null) {
-				sb.append(line);
-				sb.append(System.lineSeparator());
-				line = br.readLine();
-			}
-			everything = sb.toString();
-			br.close();
-		} finally {
-			System.out.println("found!");
-			for(int i = 0; i < 40 ; i++){
-				//go through all moves made
-				state = moves[i];
-				System.out.println(state.substring(0,9));
-				if(state == null){
-					break;
+		public static void learn(String winner) throws IOException{		
+			String everything = "";
+			String state = "";
+			Pattern patternLog = null;
+			Matcher matcherLog = null;
+			//read log file
+			File file = new File("log.txt");
+			try {
+				FileReader fileReader = new FileReader(file);
+				BufferedReader br = new BufferedReader(fileReader);
+				StringBuilder sb = new StringBuilder();
+				String line = br.readLine();
+				while (line != null) {
+					sb.append(line);
+					sb.append(System.lineSeparator());
+					line = br.readLine();
 				}
-				patternLog = Pattern.compile(state.substring(3));
-				matcherLog = patternLog.matcher(everything);
-				if(!matcherLog.find()){
-					//append to file
-					System.out.println("Appending!");
-					FileWriter fileWritter = new FileWriter(file.getName(),true);
-					BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-					bufferWritter.write(state);
-					bufferWritter.close();
+				everything = sb.toString();
+				br.close();
+			} finally {
+				System.out.println("found!");
+				for(int i = 0; i < 40 ; i++){
+					//go through all moves made
+					state = moves[i];
+					if(state == null){
+						break;
+					}
+					String [] temp = state.split(" ");
+					state = temp[0]+ " "+ temp[1]+ " "+ temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[6]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12]+ " "+ temp[13]+ "\n";
+					String match = temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[6]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12]+ " "+ temp[13];
+					patternLog = Pattern.compile(match);
+					matcherLog = patternLog.matcher(everything);
+					if(!matcherLog.find()){
+						//append to file
+						System.out.println("Appending!");
+						System.out.println(state.substring(0,1));
+						if(winner.equals("L") && state.substring(0,1).equals("L")){
+							FileWriter fileWritter = new FileWriter(file.getName(),true);
+							BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+							bufferWritter.write(state);
+							bufferWritter.close();
+						}
+						if(winner.equals("R") && state.substring(0,1).equals("R")){
+							FileWriter fileWritter = new FileWriter(file.getName(),true);
+							BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+							bufferWritter.write(state);
+							bufferWritter.close();
+						}
+						if(winner.equals("T")){
+							FileWriter fileWritter = new FileWriter(file.getName(),true);
+							BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+							bufferWritter.write(state);
+							bufferWritter.close();
+						}
+					}
 				}
+				System.out.println("Done!");
 			}
-			System.out.println("Done");
 		}
-	}
 	// boolean to create a value if the recall is successful. If not, then use heuristic
 	// takes input of the current state of board as string 044433333333
 	static public boolean MemoryRecal(String curState) {
