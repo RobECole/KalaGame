@@ -6,8 +6,8 @@ import java.util.regex.*;
 
 public class Kalah {
 	public static boolean player = true;
-	//public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
-	public static int[] board = new int[] {0,3,0,0,0,1,0,0,0,0,0,0,1,0};
+	public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
+	//public static int[] board = new int[] {0,3,0,0,0,1,0,0,0,0,0,0,1,0};
 	public static int turn = 0;
 	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
@@ -33,8 +33,10 @@ public class Kalah {
         
         while (game){
         	Printboard();
+
         	if (player) System.out.println("Player L's Move");
         	else System.out.println("Player R's Move");
+			System.out.println("PREDICTION: "+HeuristicMove());
         	move = reader.next();
         	System.out.println(move.substring(0,1));
         	System.out.println(Integer.parseInt(move.substring(1,2)));
@@ -42,8 +44,9 @@ public class Kalah {
         		if (move.substring(0,1).equals("L")){
         			ind = Integer.parseInt(move.substring(1))-1;
         			if (board[ind]>0 && player){
-        				moves[turn] = Move(ind,move);
+        				moves[turn] = move + " "+ Move(ind,move);
         				System.out.println("TURN:"+moves[turn]);
+
         				game = Gamegoing();
         			}
         			else System.out.println("Move invalid.");
@@ -52,7 +55,7 @@ public class Kalah {
         		else if (move.substring(0,1).equals("R")){      		
         			ind = Integer.parseInt(move.substring(1))+6;
         			if (board[ind]>0 && !player){
-        				moves[turn] = Move(ind,move);
+        				moves[turn] = move + " "+ Move(ind,move);
         				System.out.println("TURN:"+moves[turn]);
         				game = Gamegoing();
         			}
@@ -73,6 +76,7 @@ public class Kalah {
     else{
     	System.out.println("Tie game");
     }
+    reader.close();
 	}
 	static String Move (int arnum,String mov){
 		int pointer = arnum;
@@ -92,7 +96,7 @@ public class Kalah {
 			for (int x=0;x<14;x++){
 				boardstring=boardstring+board[x];
 			}
-			return (mov+" "+boardstring);
+			return (boardstring);
 		}
 		else if (board[pointer]==1){
 			if (pointer>6 && !player && board[pointer-((pointer-6)*2)]>0){
@@ -112,7 +116,7 @@ public class Kalah {
 		}
 		player = !player;
 
-		return mov+" "+boardstring;}
+		return boardstring;}
 	static boolean Gamegoing(){
 		boolean end=true;
 		for (int x=0;x<6;x++){
@@ -187,50 +191,137 @@ public class Kalah {
 			    }
 		    }
 		}
-		public boolean MemoryRecal(String find) {
-			try {
-				File file = new File("log.txt");
-				FileReader fileReader = new FileReader(file);
-				BufferedReader bufferedReader = new BufferedReader(fileReader);
-				String line;
-				while ((line = bufferedReader.readLine()) != null) {
+		 // boolean to create a value if the recall is successful. If not, then use heuristic
+        // takes input of the current state of board as string 044433333333
+        static public boolean MemoryRecal(String curState) {
+               
+                //accessing past experience log file
+                try {
+                        File file = new File("log.txt");
+                        FileReader fileReader = new FileReader(file);
+                        BufferedReader bufferedReader = new BufferedReader(fileReader);
+                        String line;
+                       
+                        //taking in line by line, comparing previous board states to find one that matches current
+                        while ((line = bufferedReader.readLine()) != null) {
 
-					String[] parts = line.split("-");
-					String board = parts[1];
-					String prevMove = parts[0];
-
-					if (board == find) {
-						move = 	prevMove;
-						fileReader.close();
-						bufferedReader.close();
-						return true;
-					}
-				}
-				fileReader.close();
-				bufferedReader.close();
-				return false;
-			}catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
-		/*public String HeuristicMove(){
+                                String[] parts = line.split(" ");
+                                String prevBoard = parts[1];
+                                String prevMove = parts[0];
+                               
+                                //if a match is found, set the move to the previous move
+                                if (curState.equals(prevBoard)) {
+                                        move =  prevMove;
+                                        fileReader.close();
+                                        bufferedReader.close();
+                                        return true;
+                                }
+                        }
+                        // no match is found, return false
+                        fileReader.close();
+                        bufferedReader.close();
+                        return false;
+                }
+                //IO error catching
+                catch (IOException e) {
+                        e.printStackTrace();
+                }
+                return false;
+        }
+		static public String HeuristicMove(){
+		String futurboard; 
+		int[] copyboard = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		int[] futureboard = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		 int moveprio = 5;
+		 String moveoption="";
 			if (player){
 				for (int x=0;x<6;x++){
 					//check if the move will give a free turn
+					if (board[x]!=0){
 					if (x+board[x]==6){
-						if ((x+board[x]<6) && (board[x+board[x]]==0) && (board[x+((6-x)*2)]>0)){
-							return "L"+x;
+						copyboard = boardreplace(board);
+						futurboard = Move(x,"L"+(x+1));
+						board = boardreplace(copyboard);
+						for (int z=0;z<futureboard.length;z++){
+							futureboard[z] = Integer.parseInt(futurboard.substring(x,x+1));
 						}
-						else if (x+board[x])
+						for (int y=0;y<6;y++){                                                       
+							if ((y+futureboard[y]<6) && (futureboard[y+futureboard[y]]==0) && (futureboard[(y+futureboard[y])+((6-(y+futureboard[y]))*2)]>0)) return "L"+x;
 						//check if the free move will be advantegeous
+							else if (y+futureboard[y]==0 && moveprio > 1) {
+								moveoption= "L"+(x+1);
+								moveprio=1;
+						
+							}
+							else if (moveprio > 3){
+								moveoption = "L"+(x+1);
+								moveprio = 3;
+							}
 					}
-				}
+					}
+					else if ((x+board[x]<6) && (board[x+board[x]]==0) && (board[(x+board[x])+((6-(x+board[x]))*2)]>0)&&(moveprio > 2)){
+						moveoption = "L"+(x+1);
+						moveprio=2;
+					}
+				
+			
+				
 				//check for move that will steal points
 				//checks for simple free turn
 				//check for defensive move
 			}
-			return fmove;
+				}
 		}
-		*/
+			if (!player){
+				for (int x=12;x>6;x--){
+					//check if the move will give a free turn
+					if (board[x]!=0){
+						if (x+board[x]<13){	
+					if (x+board[x]==13){
+						copyboard = boardreplace(board);
+						futurboard = Move(x,"R"+(x+1));
+						board = boardreplace(copyboard);
+						for (int z=0;z<futureboard.length;z++){
+							futureboard[z] = Integer.parseInt(futurboard.substring(x,x+1));
+						}
+						for (int y=12;y>6;y--){
+							if(futureboard[y]+y<13){                                                
+							if ((y+futureboard[y]>6) && (futureboard[y+futureboard[y]]==0) && (futureboard[(y+futureboard[y])-(((y+futureboard[y])-6)*2)]>0)) return "R"+(x-6);
+						//check if the free move will be advantegeous
+							else if (y+futureboard[y]==0 && moveprio > 1) {
+								moveoption= "R"+(x-6);
+								moveprio=1;
+						
+							}
+							else if (moveprio > 3){
+								moveoption = "R"+(x-6);
+								moveprio = 3;
+							}
+							}
+					}
+					}
+					
+					else if (((x+board[x]>6) && (board[x+board[x]]==0) && (board[(x+board[x])-(((x+board[x])-6)*2)]>0)) && (moveprio>2)){
+						moveoption = "R"+(x-6);
+						moveprio=2;
+					}
+				
+			
+				
+				//check for move that will steal points
+				//checks for simple free turn
+				//check for defensive move
+						}
+			}
+				}
+		}
+			return moveoption;
+		}
+		static public int[] boardreplace(int[] boardr){
+			int[] boardreplaced = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			for (int x = 0;x<14;x++){
+				boardreplaced[x]=boardr[x];
+			}
+			return boardreplaced;
+		}
 }
