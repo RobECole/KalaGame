@@ -11,14 +11,10 @@ public class Kalah {
 	public static int turn = 0;
 	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
-	//Kevin's - increment move counter when a move is made to add more moves
-	public static int moveCount = 0;
-	//Raab's - no idea LOL
 	public static String move;
 	public static void main(String[] args){
 		boolean game=true;
 
-		String[] moves = new String[40];
 		Scanner reader = new Scanner(System.in);
 		
 		String move;
@@ -28,7 +24,6 @@ public class Kalah {
         for(int i = 0; i<40; i++){
         	moves[i] = null;
         }
-        moveCount = 0;
         
         
         while (game){
@@ -156,41 +151,48 @@ public class Kalah {
     	System.out.println("");
 }
 	//Appends any moves not already in the file into the files
-		public void learn() throws IOException{		
-			String everything = "";
-		    String state = "";
-		    Pattern patternLog = null;
-		    Matcher matcherLog = null;
-			//read log file
-			BufferedReader br = new BufferedReader(new FileReader("log.txt"));
-		    try {
-		        StringBuilder sb = new StringBuilder();
-		        String line = br.readLine();
-
-		        while (line != null) {
-		            sb.append(line);
-		            sb.append(System.lineSeparator());
-		            line = br.readLine();
-		        }
-		        everything = sb.toString();
-		    } finally {
-		        br.close();
-		        System.out.println("found!");
-		    }
-		    for(int i = 0; i < 40 ; i++){
-		    	//go through all moves made
-		    	state = moves[i];
-		    	if(state == null){
-		    		break;
-		    	}
-		    	patternLog = Pattern.compile("\\w*\\s" + state);
-			    matcherLog = patternLog.matcher(everything);
-		    	if(matcherLog.matches() == false){
-			    	//append to file
-		    		System.out.println("Appending!");
+			public static void learn() throws IOException{		
+				String everything = "";
+			    String state = "";
+			    Pattern patternLog = null;
+			    Matcher matcherLog = null;
+				//read log file
+			    File file = new File("log.txt");
+			    try {
+	                FileReader fileReader = new FileReader(file);
+	                BufferedReader br = new BufferedReader(fileReader);
+			        StringBuilder sb = new StringBuilder();
+			        String line = br.readLine();
+			        while (line != null) {
+			            sb.append(line);
+			            sb.append(System.lineSeparator());
+			            line = br.readLine();
+			        }
+			        everything = sb.toString();
+			        br.close();
+			    } finally {
+			        System.out.println("found!");
+				    for(int i = 0; i < 40 ; i++){
+				    	//go through all moves made
+				    	state = moves[i];
+				    	System.out.println(state.substring(0,9));
+				    	if(state == null){
+				    		break;
+				    	}
+				    	patternLog = Pattern.compile(state.substring(3));
+					    matcherLog = patternLog.matcher(everything);
+				    	if(!matcherLog.find()){
+					    	//append to file
+				    		System.out.println("Appending!");
+				    		FileWriter fileWritter = new FileWriter(file.getName(),true);
+			    	        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+			    	        bufferWritter.write(state);
+			    	        bufferWritter.close();
+					    }
+				    }
+				    System.out.println("Done");
 			    }
-		    }
-		}
+			}
 		 // boolean to create a value if the recall is successful. If not, then use heuristic
         // takes input of the current state of board as string 044433333333
         static public boolean MemoryRecal(String curState) {
