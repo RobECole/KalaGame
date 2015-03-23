@@ -16,62 +16,62 @@ public class Kalah {
 		boolean game=true;
 
 		Scanner reader = new Scanner(System.in);
-		
+
 		String move;
 		int ind = 0;
-        System.out.println("Ez algo ez lyfe");
-        //Kevin's - temporary initialize move array for the each game
-        for(int i = 0; i<40; i++){
-        	moves[i] = null;
-        }
-        
-        
-        while (game){
-        	Printboard();
+		System.out.println("Ez algo ez lyfe");
+		//Kevin's - temporary initialize move array for the each game
+		for(int i = 0; i<40; i++){
+			moves[i] = null;
+		}
 
-        	if (player) System.out.println("Player L's Move");
-        	else System.out.println("Player R's Move");
+
+		while (game){
+			Printboard();
+
+			if (player) System.out.println("Player L's Move");
+			else System.out.println("Player R's Move");
 			System.out.println("PREDICTION: "+HeuristicMove());
-        	move = reader.next();
-        	System.out.println(move.substring(0,1));
-        	System.out.println(Integer.parseInt(move.substring(1,2)));
-        	if ((move.substring(0,1).equals("L")||move.substring(0,1).equals("R"))&&((Integer.parseInt(move.substring(1,2))>0)&&(Integer.parseInt(move.substring(1,2))<7))){
-        		if (move.substring(0,1).equals("L")){
-        			ind = Integer.parseInt(move.substring(1))-1;
-        			if (board[ind]>0 && player){
-        				moves[turn] = move + " "+ Move(ind,move);
-        				System.out.println("TURN:"+moves[turn]);
+			move = reader.next();
+			System.out.println(move.substring(0,1));
+			System.out.println(Integer.parseInt(move.substring(1,2)));
+			if ((move.substring(0,1).equals("L")||move.substring(0,1).equals("R"))&&((Integer.parseInt(move.substring(1,2))>0)&&(Integer.parseInt(move.substring(1,2))<7))){
+				if (move.substring(0,1).equals("L")){
+					ind = Integer.parseInt(move.substring(1))-1;
+					if (board[ind]>0 && player){
+						moves[turn] = move + " "+ Move(ind,move);
+						System.out.println("TURN:"+moves[turn]);
 
-        				game = Gamegoing();
-        			}
-        			else System.out.println("Move invalid.");
+						game = Gamegoing();
+					}
+					else System.out.println("Move invalid.");
 
-        		}
-        		else if (move.substring(0,1).equals("R")){      		
-        			ind = Integer.parseInt(move.substring(1))+6;
-        			if (board[ind]>0 && !player){
-        				moves[turn] = move + " "+ Move(ind,move);
-        				System.out.println("TURN:"+moves[turn]);
-        				game = Gamegoing();
-        			}
-        			else System.out.println("Move invalid.");
-        		}
-        	}
-        	else System.out.println("Move invalid.");
-        	
-    		turn++;    
-    }
-    Printboard();
-    if (board[6]>board[13]){
-    	System.out.println("Player L wins");
-    }
-    else if (board[6]<board[13]){
-    	System.out.println("Player R wins");
-    }
-    else{
-    	System.out.println("Tie game");
-    }
-    reader.close();
+				}
+				else if (move.substring(0,1).equals("R")){      		
+					ind = Integer.parseInt(move.substring(1))+6;
+					if (board[ind]>0 && !player){
+						moves[turn] = move + " "+ Move(ind,move);
+						System.out.println("TURN:"+moves[turn]);
+						game = Gamegoing();
+					}
+					else System.out.println("Move invalid.");
+				}
+			}
+			else System.out.println("Move invalid.");
+
+			turn++;    
+		}
+		Printboard();
+		if (board[6]>board[13]){
+			System.out.println("Player L wins");
+		}
+		else if (board[6]<board[13]){
+			System.out.println("Player R wins");
+		}
+		else{
+			System.out.println("Tie game");
+		}
+		reader.close();
 	}
 	static String Move (int arnum,String mov){
 		int pointer = arnum;
@@ -83,7 +83,7 @@ public class Kalah {
 
 			board[pointer]++;
 			board[arnum]--;
-			
+
 		}
 		String boardstring="";
 
@@ -116,16 +116,16 @@ public class Kalah {
 		boolean end=true;
 		for (int x=0;x<6;x++){
 			if (board[x]>0){ end=false;
-		}
+			}
 		}
 		if (end==true) {
 			for (int x=12;x>6;x--){
 				board[13]+=board[x];
 				board[x]=0;
 			}
-		
+
 			return false;
-	}
+		}
 		end = true;
 		for (int x=12;x>6;x--){
 			if (board[x]>0) end=false;
@@ -141,105 +141,105 @@ public class Kalah {
 	}
 	static void Printboard(){
 		for (int x=13;x>6;x--){
-        	System.out.print(board[x]);	
-    	}
-    	System.out.println(" ");
-    	System.out.print(" ");
-    	for (int x=0;x<7;x++){
-    		System.out.print(board[x]);
-    	}
-    	System.out.println("");
-}
+			System.out.print(board[x]);	
+		}
+		System.out.println(" ");
+		System.out.print(" ");
+		for (int x=0;x<7;x++){
+			System.out.print(board[x]);
+		}
+		System.out.println("");
+	}
 	//Appends any moves not already in the file into the files
-			public static void learn() throws IOException{		
-				String everything = "";
-			    String state = "";
-			    Pattern patternLog = null;
-			    Matcher matcherLog = null;
-				//read log file
-			    File file = new File("log.txt");
-			    try {
-	                FileReader fileReader = new FileReader(file);
-	                BufferedReader br = new BufferedReader(fileReader);
-			        StringBuilder sb = new StringBuilder();
-			        String line = br.readLine();
-			        while (line != null) {
-			            sb.append(line);
-			            sb.append(System.lineSeparator());
-			            line = br.readLine();
-			        }
-			        everything = sb.toString();
-			        br.close();
-			    } finally {
-			        System.out.println("found!");
-				    for(int i = 0; i < 40 ; i++){
-				    	//go through all moves made
-				    	state = moves[i];
-				    	System.out.println(state.substring(0,9));
-				    	if(state == null){
-				    		break;
-				    	}
-				    	patternLog = Pattern.compile(state.substring(3));
-					    matcherLog = patternLog.matcher(everything);
-				    	if(!matcherLog.find()){
-					    	//append to file
-				    		System.out.println("Appending!");
-				    		FileWriter fileWritter = new FileWriter(file.getName(),true);
-			    	        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-			    	        bufferWritter.write(state);
-			    	        bufferWritter.close();
-					    }
-				    }
-				    System.out.println("Done");
-			    }
+	public static void learn() throws IOException{		
+		String everything = "";
+		String state = "";
+		Pattern patternLog = null;
+		Matcher matcherLog = null;
+		//read log file
+		File file = new File("log.txt");
+		try {
+			FileReader fileReader = new FileReader(file);
+			BufferedReader br = new BufferedReader(fileReader);
+			StringBuilder sb = new StringBuilder();
+			String line = br.readLine();
+			while (line != null) {
+				sb.append(line);
+				sb.append(System.lineSeparator());
+				line = br.readLine();
 			}
-		 // boolean to create a value if the recall is successful. If not, then use heuristic
-        // takes input of the current state of board as string 044433333333
-        static public boolean MemoryRecal(String curState) {
-               
-                //accessing past experience log file
-                try {
-                        File file = new File("log.txt");
-                        FileReader fileReader = new FileReader(file);
-                        BufferedReader bufferedReader = new BufferedReader(fileReader);
-                        String line;
-                       
-                        //taking in line by line, comparing previous board states to find one that matches current
-                        while ((line = bufferedReader.readLine()) != null) {
+			everything = sb.toString();
+			br.close();
+		} finally {
+			System.out.println("found!");
+			for(int i = 0; i < 40 ; i++){
+				//go through all moves made
+				state = moves[i];
+				System.out.println(state.substring(0,9));
+				if(state == null){
+					break;
+				}
+				patternLog = Pattern.compile(state.substring(3));
+				matcherLog = patternLog.matcher(everything);
+				if(!matcherLog.find()){
+					//append to file
+					System.out.println("Appending!");
+					FileWriter fileWritter = new FileWriter(file.getName(),true);
+					BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+					bufferWritter.write(state);
+					bufferWritter.close();
+				}
+			}
+			System.out.println("Done");
+		}
+	}
+	// boolean to create a value if the recall is successful. If not, then use heuristic
+	// takes input of the current state of board as string 044433333333
+	static public boolean MemoryRecal(String curState) {
 
-                                String[] parts = line.split(" ");
-                                String prevBoard = parts[1];
-                                String prevMove = parts[0];
-                               
-                                //if a match is found, set the move to the previous move
-                                if (curState.equals(prevBoard)) {
-                                        move =  prevMove;
-                                        fileReader.close();
-                                        bufferedReader.close();
-                                        return true;
-                                }
-                        }
-                        // no match is found, return false
-                        fileReader.close();
-                        bufferedReader.close();
-                        return false;
-                }
-                //IO error catching
-                catch (IOException e) {
-                        e.printStackTrace();
-                }
-                return false;
-        }
-		static public String HeuristicMove(){
+		//accessing past experience log file
+		try {
+			File file = new File("log.txt");
+			FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			String line;
+
+			//taking in line by line, comparing previous board states to find one that matches current
+			while ((line = bufferedReader.readLine()) != null) {
+
+				String[] parts = line.split(" ");
+				String prevBoard = parts[1];
+				String prevMove = parts[0];
+
+				//if a match is found, set the move to the previous move
+				if (curState.equals(prevBoard)) {
+					move =  prevMove;
+					fileReader.close();
+					bufferedReader.close();
+					return true;
+				}
+			}
+			// no match is found, return false
+			fileReader.close();
+			bufferedReader.close();
+			return false;
+		}
+		//IO error catching
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	static public String HeuristicMove(){
 		String futurboard; 
 		int[] copyboard = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		int[] futureboard = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-		 int moveprio = 5;
-		 String moveoption="";
-			if (player){
-				for (int x=0;x<6;x++){
-					//check if the move will give a free turn
-					if (board[x]!=0){
+		int moveprio = 6;
+		String moveoption="";
+		if (player){
+			for (int x=0;x<6;x++){
+				//check if the move will give a free turn
+				if (board[x]!=0){
 					if (x+board[x]==6){
 						copyboard = boardreplace(board);
 						futurboard = Move(x,"L"+(x+1));
@@ -249,81 +249,96 @@ public class Kalah {
 						}
 						for (int y=0;y<6;y++){                                                       
 							if ((y+futureboard[y]<6) && (futureboard[y+futureboard[y]]==0) && (futureboard[(y+futureboard[y])+((6-(y+futureboard[y]))*2)]>0)) return "L"+x;
-						//check if the free move will be advantegeous
+							//check if the free move will be advantegeous
 							else if (y+futureboard[y]==0 && moveprio > 1) {
 								moveoption= "L"+(x+1);
 								moveprio=1;
-						
+							}
+							else if (futureboard[y]==0){
+								for (int z=0;z<y;z++){
+									if (z + futureboard[z]==y && moveprio > 4){
+										moveoption = "L"+(x+1);
+										moveprio=5;
+									}
+								}
 							}
 							else if (moveprio > 3){
 								moveoption = "L"+(x+1);
 								moveprio = 3;
 							}
-					}
+						}
 					}
 					else if ((x+board[x]<6) && (board[x+board[x]]==0) && (board[(x+board[x])+((6-(x+board[x]))*2)]>0)&&(moveprio > 2)){
 						moveoption = "L"+(x+1);
 						moveprio=2;
 					}
-				
-			
-				
-				//check for move that will steal points
-				//checks for simple free turn
-				//check for defensive move
-			}
+
+
+
+					//check for move that will steal points
+					//checks for simple free turn
+					//check for defensive move
 				}
-		}
-			if (!player){
-				for (int x=12;x>6;x--){
-					//check if the move will give a free turn
-					if (board[x]!=0){
-						if (x+board[x]<13){	
-					if (x+board[x]==13){
-						copyboard = boardreplace(board);
-						futurboard = Move(x,"R"+(x+1));
-						board = boardreplace(copyboard);
-						for (int z=0;z<futureboard.length;z++){
-							futureboard[z] = Integer.parseInt(futurboard.substring(x,x+1));
-						}
-						for (int y=12;y>6;y--){
-							if(futureboard[y]+y<13){                                                
-							if ((y+futureboard[y]>6) && (futureboard[y+futureboard[y]]==0) && (futureboard[(y+futureboard[y])-(((y+futureboard[y])-6)*2)]>0)) return "R"+(x-6);
-						//check if the free move will be advantegeous
-							else if (y+futureboard[y]==0 && moveprio > 1) {
-								moveoption= "R"+(x-6);
-								moveprio=1;
-						
-							}
-							else if (moveprio > 3){
-								moveoption = "R"+(x-6);
-								moveprio = 3;
-							}
-							}
-					}
-					}
-					
-					else if (((x+board[x]>6) && (board[x+board[x]]==0) && (board[(x+board[x])-(((x+board[x])-6)*2)]>0)) && (moveprio>2)){
-						moveoption = "R"+(x-6);
-						moveprio=2;
-					}
-				
-			
-				
-				//check for move that will steal points
-				//checks for simple free turn
-				//check for defensive move
-						}
 			}
+		}
+		if (!player){
+			for (int x=12;x>6;x--){
+				copyboard = boardreplace(board);
+				futurboard = Move(x,"R"+(x+1));
+				board = boardreplace(copyboard);
+				//check if the move will give a free turn
+				if (board[x]!=0){
+					if (x+board[x]<=13){	
+						if (x+board[x]==13){
+
+							for (int z=0;z<futureboard.length;z++){
+								futureboard[z] = Integer.parseInt(futurboard.substring(x,x+1));
+							}
+							for (int y=12;y>6;y--){
+								if(futureboard[y]+y<13){                                                
+									if ((y+futureboard[y]>6) && (futureboard[y+futureboard[y]]==0) && (futureboard[(y+futureboard[y])-(((y+futureboard[y])-6)*2)]>0)) return "R"+(x-6);
+									//check if the free move will be advantegeous
+									else if (y+futureboard[y]==0 && moveprio > 1) {
+										moveoption= "R"+(x-6);
+										moveprio=1;
+									}
+								}
+								else if (futureboard[y]==0){
+									for (int z=7;z<y;z++){
+										if (z + futureboard[z]==y && moveprio > 4){
+											moveoption = "R"+(x-6);
+											moveprio=5;
+										}
+									}
+								}
+								else if (moveprio > 3){
+										moveoption = "R"+(x-6);
+										moveprio = 3;
+									}
+								}
+							}
+						}
+						else if (((x+board[x]>6) && (board[x+board[x]]==0) && (board[(x+board[x])-(((x+board[x])-6)*2)]>0)) && (moveprio>2)){
+							moveoption = "R"+(x-6);
+							moveprio=2;
+						}
+
+
+
+						//check for move that will steal points
+						//checks for simple free turn
+						//check for defensive move
+					}
 				}
-		}
-			return moveoption;
-		}
-		static public int[] boardreplace(int[] boardr){
-			int[] boardreplaced = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-			for (int x = 0;x<14;x++){
-				boardreplaced[x]=boardr[x];
 			}
-			return boardreplaced;
 		}
+		return moveoption;
+	}
+	static public int[] boardreplace(int[] boardr){
+		int[] boardreplaced = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		for (int x = 0;x<14;x++){
+			boardreplaced[x]=boardr[x];
+		}
+		return boardreplaced;
+	}
 }
