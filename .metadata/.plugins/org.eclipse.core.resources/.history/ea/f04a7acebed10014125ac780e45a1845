@@ -33,7 +33,7 @@ public class Kalah {
 			if (player) System.out.println("Player L's Move");
 			else System.out.println("Player R's Move");
 			playerplz=player;
-			System.out.println("Previous Memory Move: " + MemoryRecal());
+			System.out.println("Previous Memory Move: " + MemoryRecal(boardasstring));
 			System.out.println("PREDICTION: "+HeuristicMove());
 			player=playerplz;
 			move = reader.next();
@@ -228,7 +228,7 @@ public class Kalah {
 		}
 	// boolean to create a value if the recall is successful. If not, then use heuristic
 	// takes input of the current state of board as string 044433333333
-		static public String MemoryRecal() {
+		static public String MemoryRecal(String curState) {
 
 			//accessing past experience log file
 			try {
@@ -236,10 +236,6 @@ public class Kalah {
 				FileReader fileReader = new FileReader(file);
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 				String line;
-				
-				String [] temp = boardasstring.split(" ");
-				
-				String match = temp[0] + " " + temp[1]+ " "+ temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[7]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12];
 
 				//taking in line by line, comparing previous board states to find one that matches current
 				while ((line = bufferedReader.readLine()) != null) {
@@ -247,10 +243,9 @@ public class Kalah {
 					if (line.length()!= 0){
 						String prevMove = line.substring(0,2);
 						String prevBoard = line.substring(3);
-						prevBoard = prevBoard.replaceAll("\n","");
 		
 						//if a match is found, set the move to the previous move
-						if (match.equals(prevBoard)) {
+						if (curState.equals(prevBoard)) {
 							move =  prevMove;
 							fileReader.close();
 							bufferedReader.close();

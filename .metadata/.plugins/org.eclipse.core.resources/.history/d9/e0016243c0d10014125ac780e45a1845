@@ -239,15 +239,19 @@ public class Kalah {
 				
 				String [] temp = boardasstring.split(" ");
 				
-				String match = temp[0] + " " + temp[1]+ " "+ temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[7]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12];
-
+				for (int i=0; i < temp.length; i++)
+				{ 
+					System.out.println(temp[i]);
+				}
+				
+				String match = temp[1] + " " + temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[6]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12]+ " "+ temp[13]+" ";
+				System.out.println(match);
 				//taking in line by line, comparing previous board states to find one that matches current
 				while ((line = bufferedReader.readLine()) != null) {
 					
 					if (line.length()!= 0){
 						String prevMove = line.substring(0,2);
 						String prevBoard = line.substring(3);
-						prevBoard = prevBoard.replaceAll("\n","");
 		
 						//if a match is found, set the move to the previous move
 						if (match.equals(prevBoard)) {
