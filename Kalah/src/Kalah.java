@@ -33,6 +33,7 @@ public class Kalah {
 			if (player) System.out.println("Player L's Move");
 			else System.out.println("Player R's Move");
 			playerplz=player;
+			System.out.println("Previous Memory Move: " + MemoryRecal(boardasstring));
 			System.out.println("PREDICTION: "+HeuristicMove());
 			player=playerplz;
 			move = reader.next();
@@ -227,41 +228,42 @@ public class Kalah {
 		}
 	// boolean to create a value if the recall is successful. If not, then use heuristic
 	// takes input of the current state of board as string 044433333333
-	static public boolean MemoryRecal(String curState) {
+		static public String MemoryRecal(String curState) {
 
-		//accessing past experience log file
-		try {
-			File file = new File("log.txt");
-			FileReader fileReader = new FileReader(file);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			String line;
+			//accessing past experience log file
+			try {
+				File file = new File("log.txt");
+				FileReader fileReader = new FileReader(file);
+				BufferedReader bufferedReader = new BufferedReader(fileReader);
+				String line;
 
-			//taking in line by line, comparing previous board states to find one that matches current
-			while ((line = bufferedReader.readLine()) != null) {
-
-				String[] parts = line.split(" ");
-				String prevBoard = parts[1];
-				String prevMove = parts[0];
-
-				//if a match is found, set the move to the previous move
-				if (curState.equals(prevBoard)) {
-					move =  prevMove;
-					fileReader.close();
-					bufferedReader.close();
-					return true;
+				//taking in line by line, comparing previous board states to find one that matches current
+				while ((line = bufferedReader.readLine()) != null) {
+					
+					if (line.length()!= 0){
+						String prevMove = line.substring(0,2);
+						String prevBoard = line.substring(3);
+		
+						//if a match is found, set the move to the previous move
+						if (curState.equals(prevBoard)) {
+							move =  prevMove;
+							fileReader.close();
+							bufferedReader.close();
+							return prevMove;
+						}
+					}
 				}
+				// no match is found, return false
+				fileReader.close();
+				bufferedReader.close();
+				return "No previous scenario";
 			}
-			// no match is found, return false
-			fileReader.close();
-			bufferedReader.close();
-			return false;
+			//IO error catching
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+			return "Could not read file";
 		}
-		//IO error catching
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
 	static public String HeuristicMove(){
 		String fboard; 
 		int[] copyboard = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
