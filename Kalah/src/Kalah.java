@@ -9,8 +9,9 @@ public class Kalah {
 	public static boolean player = true;
 	public static int[] board = new int[] {3,3,3,3,3,3,0,3,3,3,3,3,3,0};
 	//public static int[] board = new int[] {0,4,0,0,4,4,5,0,4,1,0,4,4,6};
-	public static String boardasstring="";
+	public static String boardasstring="3 3 3 3 3 3 0 3 3 3 3 3 3 0 ";
 	public static int turn = 0;
+	public static String prevMove = "3 3 3 3 3 3 0 3 3 3 3 3 3 0 ";
 	//Kevin's - moves made in the game in format ( L1 3 3 3 3 3 3 2 2 2 2 2 2) where 3 = P1 and 2 = P2 and L1 = move made
 	public static String[] moves = new String[40]; 
 	public static String move;
@@ -19,15 +20,13 @@ public class Kalah {
 		boolean playerplz;
 		Scanner reader = new Scanner(System.in);
 
-		String move;
+		//String move;
 		int ind = 0;
 		System.out.println("Ez algo ez lyfe");
 		//Kevin's - temporary initialize move array for the each game
 		for(int i = 0; i<40; i++){
 			moves[i] = null;
 		}
-
-
 		while (game){
 			Printboard();
 
@@ -43,8 +42,9 @@ public class Kalah {
 				if (move.substring(0,1).equals("L")){
 					ind = Integer.parseInt(move.substring(1))-1;
 					if (board[ind]>0 && player){
-						moves[turn] = move + " " + Move(ind,move);
-						moves[turn] = move + " " + boardasstring;
+						Move(ind,move);
+						moves[turn] = move + " "+ prevMove;
+						prevMove = boardasstring;
 						System.out.println("TURN:"+moves[turn]);
 
 						game = Gamegoing();
@@ -55,8 +55,9 @@ public class Kalah {
 				else if (move.substring(0,1).equals("R")){      		
 					ind = Integer.parseInt(move.substring(1))+6;
 					if (board[ind]>0 && !player){
-						moves[turn] = move + " "+ Move(ind,move);
-						moves[turn] = move + " "+ boardasstring;
+						Move(ind, move);
+						moves[turn] = move + " "+ prevMove;
+						prevMove = boardasstring;
 						System.out.println("TURN:"+moves[turn]);
 						game = Gamegoing();
 					}
@@ -192,7 +193,9 @@ public class Kalah {
 					}
 					String [] temp = state.split(" ");
 					state = temp[0]+ " "+ temp[1]+ " "+ temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[6]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12]+ " "+ temp[13]+ "\n";
-					String match = temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[6]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12]+ " "+ temp[13];
+					String match = temp[1] + " " + temp[2]+ " "+ temp[3]+ " "+ temp[4]+ " "+ temp[5]+ " "+ temp[6]+ " "+ temp[8]+ " "+ temp[9]+ " "+ temp[10]+ " "+ temp[11]+ " "+ temp[12]+ " "+ temp[13];
+					//System.out.println(temp);
+					System.out.println(match);
 					patternLog = Pattern.compile(match);
 					matcherLog = patternLog.matcher(everything);
 					if(!matcherLog.find()){
